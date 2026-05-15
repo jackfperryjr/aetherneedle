@@ -76,14 +76,14 @@ jobs:
       - name: Build zip
         run: |
           cd dist
-          zip -r ../ale-extension-${{ steps.version.outputs.tag }}.zip .
-          cp ../ale-extension-${{ steps.version.outputs.tag }}.zip ../ale-extension.zip
+          zip -r ../aetherneedle-${{ steps.version.outputs.tag }}.zip .
+          cp ../aetherneedle-${{ steps.version.outputs.tag }}.zip ../aetherneedle.zip
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.version.outputs.tag }}
           files: |
-            ale-extension-${{ steps.version.outputs.tag }}.zip
-            ale-extension.zip
+            aetherneedle-${{ steps.version.outputs.tag }}.zip
+            aetherneedle.zip
           generate_release_notes: true
