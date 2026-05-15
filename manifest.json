@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Aetherneedle",
+  "name": "Magiloom Aetherneedle",
   "version": "0.0.1",
   "description": "Clip the web. Build your second brain.",
   "permissions": [
@@ -22,7 +22,7 @@
     "default_path": "src/sidepanel/index.html"
   },
   "action": {
-    "default_title": "Open Aetherneedle"
+    "default_title": "Open Magiloom"
   },
   "content_scripts": [
     {
@@ -36,8 +36,8 @@
     }
   ],
   "icons": {
-    "16": "icons/icon16.png",
-    "48": "icons/icon48.png",
-    "128": "icons/icon128.png"
+    "16": "icons/favicon-16x16.png",
+    "48": "icons/favicon-48x48.png",
+    "128": "icons/favicon-128x128.png"
   }
 }
