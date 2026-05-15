@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Magiloom Aetherneedle",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "Clip the web. Build your second brain.",
   "permissions": [
     "storage",
