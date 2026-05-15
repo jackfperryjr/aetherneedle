@@ -21,7 +21,7 @@ export default function App() {
 
   useEffect(() => {
     if (!session) return
-    chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
+    chrome.tabs.query({ active: true, lastFocusedWindow: true }, ([tab]) => {
       if (!tab?.id) return
       chrome.tabs.sendMessage(tab.id, { type: 'GET_PAGE_DATA' }, (response) => {
         if (chrome.runtime.lastError || !response) return
@@ -98,7 +98,14 @@ export default function App() {
   return (
     <div className="flex flex-col h-screen p-4 gap-4">
       <header className="flex items-center justify-between">
-        <h1 className="text-sm font-semibold tracking-tight">Magiloom</h1>
+        <div className="flex items-center gap-2">
+          <img
+            src={chrome.runtime.getURL('icons/android-chrome-48x48.png')}
+            alt="Magiloom"
+            className="w-5 h-5"
+          />
+          <h1 className="text-sm font-semibold tracking-tight">Magiloom</h1>
+        </div>
         <button
           onClick={handleSignOut}
           className="text-xs text-gray-400 hover:text-gray-600 transition-colors"
