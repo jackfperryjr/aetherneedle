@@ -21,14 +21,17 @@ export default function App() {
 
   useEffect(() => {
     if (!session) return
-    chrome.windows.getLastFocused({ windowTypes: ['normal'] }, (win) => {
-      if (!win?.id) return
-      chrome.tabs.query({ active: true, windowId: win.id }, ([tab]) => {
-        if (!tab?.id) return
-        chrome.tabs.sendMessage(tab.id, { type: 'GET_PAGE_DATA' }, (response) => {
-          if (chrome.runtime.lastError || !response) return
-          setPageData(response as PageData)
-        })
+    chrome.tabs.query({ active: true }, (tabs) => {
+      const tab = tabs.find(t => t.url?.startsWith('http'))
+      console.log('[Aetherneedle] active tabs:', tabs, '→ selected:', tab)
+      if (!tab?.id) return
+      chrome.tabs.sendMessage(tab.id, { type: 'GET_PAGE_DATA' }, (response) => {
+        if (chrome.runtime.lastError) {
+          console.error('[Aetherneedle] content script error:', chrome.runtime.lastError.message)
+          return
+        }
+        if (!response) return
+        setPageData(response as PageData)
       })
     })
   }, [session])
@@ -48,6 +51,7 @@ export default function App() {
     setSession(null)
     setPageData(null)
     setClipState('idle')
+    setErrorMsg('')
   }
 
   const handleClip = async () => {
@@ -103,7 +107,7 @@ export default function App() {
       <header className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <img
-            src={chrome.runtime.getURL('icons/android-chrome-48x48.png')}
+            src={chrome.runtime.getURL('icons/android-chrome-128x128.png')}
             alt="Magiloom"
             className="w-5 h-5"
           />
