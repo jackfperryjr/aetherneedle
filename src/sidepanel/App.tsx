@@ -34,8 +34,9 @@ export default function App() {
     try {
       const s = await signIn()
       setSession(s)
-    } catch {
-      setErrorMsg('Sign in failed. Please try again.')
+    } catch (err) {
+      console.error('[Aetherneedle] sign-in error:', err)
+      setErrorMsg(err instanceof Error ? err.message : 'Sign in failed. Please try again.')
     }
   }
 
@@ -70,11 +71,18 @@ export default function App() {
   if (!session) {
     return (
       <div className="flex flex-col items-center justify-center h-screen gap-5 p-6 text-center">
-        <div>
-          <h1 className="text-lg font-semibold tracking-tight">Aetherneedle</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Clip the web into your second brain.
-          </p>
+        <div className="flex flex-col items-center gap-3">
+          <img
+            src={chrome.runtime.getURL('icons/android-chrome-128x128.png')}
+            alt="Magiloom"
+            className="w-16 h-16"
+          />
+          <div>
+            <h1 className="text-lg font-semibold tracking-tight">Magiloom</h1>
+            <p className="mt-1 text-sm text-gray-500">
+              Clip the web into your second brain.
+            </p>
+          </div>
         </div>
         {errorMsg && <p className="text-xs text-red-500">{errorMsg}</p>}
         <button
@@ -90,7 +98,7 @@ export default function App() {
   return (
     <div className="flex flex-col h-screen p-4 gap-4">
       <header className="flex items-center justify-between">
-        <h1 className="text-sm font-semibold tracking-tight">Aetherneedle</h1>
+        <h1 className="text-sm font-semibold tracking-tight">Magiloom</h1>
         <button
           onClick={handleSignOut}
           className="text-xs text-gray-400 hover:text-gray-600 transition-colors"
