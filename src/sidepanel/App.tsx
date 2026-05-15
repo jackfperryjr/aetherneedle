@@ -21,11 +21,14 @@ export default function App() {
 
   useEffect(() => {
     if (!session) return
-    chrome.tabs.query({ active: true, lastFocusedWindow: true }, ([tab]) => {
-      if (!tab?.id) return
-      chrome.tabs.sendMessage(tab.id, { type: 'GET_PAGE_DATA' }, (response) => {
-        if (chrome.runtime.lastError || !response) return
-        setPageData(response as PageData)
+    chrome.windows.getLastFocused({ windowTypes: ['normal'] }, (win) => {
+      if (!win?.id) return
+      chrome.tabs.query({ active: true, windowId: win.id }, ([tab]) => {
+        if (!tab?.id) return
+        chrome.tabs.sendMessage(tab.id, { type: 'GET_PAGE_DATA' }, (response) => {
+          if (chrome.runtime.lastError || !response) return
+          setPageData(response as PageData)
+        })
       })
     })
   }, [session])
