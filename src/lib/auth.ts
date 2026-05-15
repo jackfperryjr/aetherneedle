@@ -24,8 +24,17 @@ export async function signIn(): Promise<Session> {
     )
   })
 
-  const { data: sessionData, error: sessionError } =
-    await supabase.auth.exchangeCodeForSession(resultUrl)
+  const hash = new URL(resultUrl).hash.slice(1)
+  const params = new URLSearchParams(hash)
+  const access_token = params.get('access_token')
+  const refresh_token = params.get('refresh_token')
+
+  if (!access_token || !refresh_token) throw new Error(`Tokens missing from callback. URL: ${resultUrl}`)
+
+  const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
+    access_token,
+    refresh_token,
+  })
 
   if (sessionError) throw sessionError
   return sessionData.session!

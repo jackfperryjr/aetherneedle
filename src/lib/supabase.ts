@@ -20,6 +20,7 @@ export const supabase = createClient(
     auth: {
       storage: chromeStorage,
       storageKey: 'aetherneedle.auth',
+      flowType: 'implicit',
       autoRefreshToken: true,
       persistSession: true,
       detectSessionInUrl: false,
