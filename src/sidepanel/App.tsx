@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Session } from '@supabase/supabase-js'
 import { getSession, signIn, signOut } from '../lib/auth'
 import { createClip, PageData } from '../lib/api'
@@ -19,11 +19,11 @@ export default function App() {
     })
   }, [])
 
-  useEffect(() => {
-    if (!session) return
+  const fetchPageData = useCallback(() => {
+    setPageData(null)
+    setClipState('idle')
     chrome.tabs.query({ active: true }, (tabs) => {
       const tab = tabs.find(t => t.url?.startsWith('http'))
-      console.log('[Aetherneedle] active tabs:', tabs, '→ selected:', tab)
       if (!tab?.id) return
       chrome.tabs.sendMessage(tab.id, { type: 'GET_PAGE_DATA' }, (response) => {
         if (chrome.runtime.lastError) {
@@ -34,7 +34,26 @@ export default function App() {
         setPageData(response as PageData)
       })
     })
-  }, [session])
+  }, [])
+
+  useEffect(() => {
+    if (!session) return
+
+    fetchPageData()
+
+    const onActivated = () => fetchPageData()
+    const onUpdated = (_: number, changeInfo: chrome.tabs.TabChangeInfo) => {
+      if (changeInfo.status === 'complete') fetchPageData()
+    }
+
+    chrome.tabs.onActivated.addListener(onActivated)
+    chrome.tabs.onUpdated.addListener(onUpdated)
+
+    return () => {
+      chrome.tabs.onActivated.removeListener(onActivated)
+      chrome.tabs.onUpdated.removeListener(onUpdated)
+    }
+  }, [session, fetchPageData])
 
   const handleSignIn = async () => {
     try {
