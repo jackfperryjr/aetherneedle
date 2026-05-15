@@ -105,6 +105,11 @@ export default function App() {
 
   const handleClip = async () => {
     if (!pageData || !session) return
+    if (!pageData.raw_text.trim()) {
+      setErrorMsg('This page has no readable text to clip.')
+      setClipState('error')
+      return
+    }
     setClipState('clipping')
     setErrorMsg('')
     try {
