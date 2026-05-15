@@ -5,19 +5,49 @@ import { createClip, PageData } from '../lib/api'
 
 type ClipState = 'idle' | 'clipping' | 'success' | 'error'
 
+function MoonIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+    </svg>
+  )
+}
+
+function SunIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+    </svg>
+  )
+}
+
 export default function App() {
   const [session, setSession] = useState<Session | null>(null)
   const [checking, setChecking] = useState(true)
   const [pageData, setPageData] = useState<PageData | null>(null)
   const [clipState, setClipState] = useState<ClipState>('idle')
   const [errorMsg, setErrorMsg] = useState('')
+  const [darkMode, setDarkMode] = useState(false)
 
   useEffect(() => {
+    chrome.storage.local.get('darkMode', (result) => {
+      const isDark = result.darkMode ?? false
+      setDarkMode(isDark)
+      document.documentElement.classList.toggle('dark', isDark)
+    })
     getSession().then((s) => {
       setSession(s)
       setChecking(false)
     })
   }, [])
+
+  const toggleDarkMode = () => {
+    const next = !darkMode
+    setDarkMode(next)
+    document.documentElement.classList.toggle('dark', next)
+    chrome.storage.local.set({ darkMode: next })
+  }
 
   const fetchPageData = useCallback(() => {
     setPageData(null)
@@ -88,7 +118,7 @@ export default function App() {
 
   if (checking) {
     return (
-      <div className="flex items-center justify-center h-screen text-sm text-gray-400">
+      <div className="flex items-center justify-center h-screen text-sm text-gray-400 dark:bg-gray-900 dark:text-gray-500">
         Loading...
       </div>
     )
@@ -96,7 +126,14 @@ export default function App() {
 
   if (!session) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen gap-5 p-6 text-center">
+      <div className="relative flex flex-col items-center justify-center h-screen gap-5 p-6 text-center dark:bg-gray-900">
+        <button
+          onClick={toggleDarkMode}
+          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors"
+          aria-label="Toggle dark mode"
+        >
+          {darkMode ? <SunIcon /> : <MoonIcon />}
+        </button>
         <div className="flex flex-col items-center gap-3">
           <img
             src={chrome.runtime.getURL('icons/android-chrome-128x128.png')}
@@ -104,8 +141,8 @@ export default function App() {
             className="w-16 h-16"
           />
           <div>
-            <h1 className="text-lg font-semibold tracking-tight">Magiloom</h1>
-            <p className="mt-1 text-sm text-gray-500">
+            <h1 className="text-lg font-semibold tracking-tight dark:text-white">Magiloom</h1>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
               Clip the web into your second brain.
             </p>
           </div>
@@ -113,7 +150,7 @@ export default function App() {
         {errorMsg && <p className="text-xs text-red-500">{errorMsg}</p>}
         <button
           onClick={handleSignIn}
-          className="w-full py-2 px-4 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-gray-700 transition-colors"
+          className="w-full py-2 px-4 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-gray-700 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200 transition-colors"
         >
           Sign in with Google
         </button>
@@ -122,7 +159,7 @@ export default function App() {
   }
 
   return (
-    <div className="flex flex-col h-screen p-4 gap-4">
+    <div className="flex flex-col h-screen p-4 gap-4 dark:bg-gray-900">
       <header className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <img
@@ -130,35 +167,44 @@ export default function App() {
             alt="Magiloom"
             className="w-5 h-5"
           />
-          <h1 className="text-sm font-semibold tracking-tight">Magiloom</h1>
+          <h1 className="text-sm font-semibold tracking-tight dark:text-white">Magiloom</h1>
         </div>
-        <button
-          onClick={handleSignOut}
-          className="text-xs text-gray-400 hover:text-gray-600 transition-colors"
-        >
-          Sign out
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={toggleDarkMode}
+            className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors"
+            aria-label="Toggle dark mode"
+          >
+            {darkMode ? <SunIcon /> : <MoonIcon />}
+          </button>
+          <button
+            onClick={handleSignOut}
+            className="text-xs text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors"
+          >
+            Sign out
+          </button>
+        </div>
       </header>
 
       <div className="flex-1 flex flex-col justify-center gap-4">
         {pageData ? (
-          <div className="rounded-lg border border-gray-100 bg-gray-50 p-3 gap-1 flex flex-col">
-            <p className="text-sm font-medium leading-snug line-clamp-2">{pageData.title}</p>
-            <p className="text-xs text-gray-400">{pageData.domain}</p>
+          <div className="rounded-lg border border-gray-100 bg-gray-50 dark:border-gray-700 dark:bg-gray-800 p-3 gap-1 flex flex-col">
+            <p className="text-sm font-medium leading-snug line-clamp-2 dark:text-white">{pageData.title}</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500">{pageData.domain}</p>
           </div>
         ) : (
-          <div className="rounded-lg border border-gray-100 bg-gray-50 p-3">
-            <p className="text-sm text-gray-400">No page detected.</p>
+          <div className="rounded-lg border border-gray-100 bg-gray-50 dark:border-gray-700 dark:bg-gray-800 p-3">
+            <p className="text-sm text-gray-400 dark:text-gray-500">No page detected.</p>
           </div>
         )}
 
         {clipState === 'success' ? (
-          <div className="rounded-lg bg-green-50 border border-green-100 p-3 text-center">
-            <p className="text-sm font-medium text-green-700">Clipped</p>
+          <div className="rounded-lg bg-green-50 border border-green-100 dark:bg-green-950 dark:border-green-900 p-3 text-center">
+            <p className="text-sm font-medium text-green-700 dark:text-green-400">Clipped</p>
             <p className="text-xs text-green-500 mt-0.5">Added to your Crystarium.</p>
             <button
               onClick={() => setClipState('idle')}
-              className="mt-3 text-xs text-green-600 underline"
+              className="mt-3 text-xs text-green-600 dark:text-green-400 underline"
             >
               Clip another
             </button>
@@ -168,7 +214,7 @@ export default function App() {
             <button
               onClick={handleClip}
               disabled={!pageData || clipState === 'clipping'}
-              className="w-full py-2 px-4 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="w-full py-2 px-4 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-gray-700 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
               {clipState === 'clipping' ? 'Clipping...' : 'Clip this page'}
             </button>
