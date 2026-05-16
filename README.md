@@ -4,6 +4,14 @@
 
 Part of the **Magiloom** second-brain ecosystem alongside [Magicite](https://github.com/jackfperryjr/magicite) and [Crystarium](https://github.com/jackfperryjr/crystarium).
 
+<p align="center">
+  <img src="https://github.com/jackfperryjr/aetherneedle/actions/workflows/release.yml/badge.svg" alt="Build Status" height="20">
+  <img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript">
+  <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white" />
+  <img src="https://img.shields.io/badge/Manifest-V3-008080?style=flat-square&logo=googlechrome&logoColor=white" alt="Manifest V3">
+  <img src="https://img.shields.io/badge/Chrome_Extension-4285F4?style=flat-square&logo=googlechrome&logoColor=white" alt="Chrome Extension">
+</p>
+
 ---
 
 ## What it does
